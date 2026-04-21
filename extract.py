@@ -2,7 +2,6 @@ import torch
 
 from read_multi_ase import * 
 from torch_geometric.data import Data
-from torch_geometric.loader import DataLoader
 from torch.utils.data import random_split
 
 
