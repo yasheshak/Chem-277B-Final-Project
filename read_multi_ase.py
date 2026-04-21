@@ -1,10 +1,12 @@
 import glob
-from importlib.metadata import files
-from typing import Union
-
 import numpy as np
 
+from typing import Union
 from fairchem.core.datasets import AseDBDataset
+
+
+def find_files(directory: str = 'data', ext: str = '.aselmdb') -> list[str]:
+    return glob.glob(f"{directory}/*{ext}")
 
 
 def read_aselmdb(file_path: Union[str, list[str]] = './data'):
@@ -29,13 +31,39 @@ def get_molecules_by_type(dataset, mol_type='biomolecules'):
     return atoms[mask].reshape(-1, 1)
 
 
-def find_files(directory: str = 'data', ext: str = '.aselmdb'):
-    return glob.glob(f"{directory}/*{ext}")
+def process_file(file: Union[str, list[str]], 
+                molecule_type: str = 'biomolecules', 
+                max_molecules: int = 100):
+    
+    """
+    Reads one or more .aselmdb files and returns filtered molecules.
+    """
 
+    # read in dataset from file names 
+    dataset = read_aselmdb(file) 
 
-def process_file(file: Union[str, list[str]]):
-    data = read_aselmdb(file)
-    return get_molecules_by_type(data)
+    # total num of mols in entire dataset 
+    n_total = len(dataset) 
+
+    # define array and pre-allocate 
+    alloc_size = max_molecules if max_molecules is not None else n_total 
+    result = np.zeros((alloc_size, 1), dtype=object)
+
+    count = 0 # for tracking 
+
+    for i in range(n_total):
+
+        if count >= alloc_size:
+            break
+
+        atoms = dataset.get_atoms(i) 
+
+        if molecule_type is None or atoms.info.get('data_id') == molecule_type:
+            result[count, 0] = atoms
+            count += 1
+
+    # cut any unfilled rows if fewer matches than alloc_size
+    return result[:count]
 
 
 class MultiAseDBDataset(AseDBDataset):
@@ -50,28 +78,20 @@ class MultiAseDBDataset(AseDBDataset):
 """
 EXAMPLE USAGE
 """
-
+ 
 '''
 files_list = find_files('data')
-
-# Single or multiple files; same interface either way
-single = read_aselmdb(files_list[0])
-multi  = read_aselmdb(files_list)
-
-# Full AseDBDataset API available on both single and multi file 
-print(len(multi))
-atoms_0 = multi.get_atoms(0)
-sample  = multi[0]
-
-# Filter by molecule type across all files
-processed = process_file(files_list)
+ 
+# Single or multiple files — same interface either way
+single_result = process_file(files_list[0], max_molecules=500)
+multi_result  = process_file(files_list, max_molecules=1000)
+ 
+# No cap — returns all matching molecules
+all_result = process_file(files_list, max_molecules=None)
+ 
+# Accept every molecule regardless of type
+all_types = process_file(files_list, mol_type=None, max_molecules=200)
+ 
+print(f"Collected {len(single_result)} molecules from a single file.")
+print(f"Collected {len(multi_result)} molecules across all files.")
 '''
-
-if __name__ == "__main__": 
-
-    files_list = find_files('data')
-
-    # change for max number of files to process 
-    max = 2
-    processed = process_file(files_list[:2])
-    print(f"{len(processed)} molecules were processed.")
