@@ -89,7 +89,7 @@ multi_result  = process_file(files_list, max_molecules=1000)
 all_result = process_file(files_list, max_molecules=None)
  
 # Accept every molecule regardless of type
-all_types = process_file(files_list, mol_type=None, max_molecules=200)
+all_types = process_file(files_list, molecule_type=None, max_molecules=200)
  
 print(f"Collected {len(single_result)} molecules from a single file.")
 print(f"Collected {len(multi_result)} molecules across all files.")
