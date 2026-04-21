@@ -12,7 +12,6 @@ def find_files(directory: str = 'data', ext: str = '.aselmdb') -> list[str]:
 def read_aselmdb(file_path: Union[str, list[str]] = './data'):
     """
     Reads one or more .aselmdb files.
-    Returns a MultiAseDBDataset regardless — single path is just a list of one.
     """
     if isinstance(file_path, str):
         file_path = [file_path]
