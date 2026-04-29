@@ -47,15 +47,6 @@ class SchNetModel(torch.nn.Module):
         out = self.schnet(data.z, data.pos, batch=data.batch)
         return out
 
-#Determine the device to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-#Initialize model with desired parameters
-bio_model = SchNetModel().to(device)
-#Create ADAM optimizer based on model's parameters and desired learning rate
-optimizer = torch.optim.Adam(bio_model.parameters(), lr=5e-5)
-#Select loss function for model
-loss_function = torch.nn.SmoothL1Loss()
-
 
 def train(model: SchNetModel, train_data: list):
     model.train()
