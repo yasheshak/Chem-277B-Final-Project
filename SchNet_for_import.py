@@ -47,16 +47,16 @@ class SchNetModel(torch.nn.Module):
         out = self.schnet(data.z, data.pos, batch=data.batch)
         return out
 
-#Determine the device to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-#Initialize model with desired parameters
-model = SchNetModel().to(device)
-#Create ADAM optimizer based on model's parameters and desired learning rate
-optimizer = torch.optim.Adam(model.parameters(), lr=5e-5)
-#Select loss function for model
-loss_function = torch.nn.SmoothL1Loss()
+# #Determine the device to be used
+# device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# #Initialize model with desired parameters
+# model = SchNetModel().to(device)
+# #Create ADAM optimizer based on model's parameters and desired learning rate
+# optimizer = torch.optim.Adam(model.parameters(), lr=5e-5)
+# #Select loss function for model
+# loss_function = torch.nn.SmoothL1Loss()
 
-def train(model: SchNetModel, train_data: list):
+def train(model: SchNetModel, train_data: list, device, optimizer, loss_function):
     model.train()
     #Keep track of total loss for all data
     total_train_loss = 0
@@ -85,7 +85,7 @@ def train(model: SchNetModel, train_data: list):
     return total_train_loss / len(train_data)
 
 @torch.no_grad()
-def evaluate(model: SchNetModel, val_data: list):
+def evaluate(model: SchNetModel, val_data: list, device, optimizer, loss_function):
     model.eval()
     total_val_loss = 0
 
@@ -105,7 +105,7 @@ def evaluate(model: SchNetModel, val_data: list):
     return total_val_loss / len(val_data)
 
 @torch.no_grad()
-def test(model: SchNetModel, test_data: list):
+def test(model: SchNetModel, test_data: list, device, optimizer, loss_function):
     model.eval()
 
     total_mae = 0
