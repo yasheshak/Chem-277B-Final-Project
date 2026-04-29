@@ -18,21 +18,21 @@ def read_aselmdb(file_path: Union[str, list[str]] = './data'):
     return MultiAseDBDataset(file_path)
 
 
-def get_molecules_by_type(dataset, mol_type='biomolecules'):
+def get_molecules_by_type(dataset, mol_type=['biomolecules', 'metal_complexes', 'elytes']):
     n = len(dataset)
     atoms = np.array([dataset.get_atoms(i) for i in range(n)], dtype=object)
 
     if mol_type is None:
         return atoms.reshape(-1, 1)
 
-    mask = np.fromiter((atom.info.get('data_id') == mol_type for atom in atoms),\
+    mask = np.fromiter((atom.info.get('data_id') not in mol_type for atom in atoms),\
         dtype=bool, count=n)
     return atoms[mask].reshape(-1, 1)
 
 
 def process_file(file: Union[str, list[str]], 
                 molecule_type: str = 'biomolecules', 
-                max_molecules: int = 100):
+                max_molecules: int = 1000):
     
     """
     Reads one or more .aselmdb files and returns filtered molecules.
@@ -57,7 +57,7 @@ def process_file(file: Union[str, list[str]],
 
         atoms = dataset.get_atoms(i) 
 
-        if molecule_type is None or atoms.info.get('data_id') == molecule_type:
+        if molecule_type is None or atoms.info.get('data_id') in molecule_type:
             result[count, 0] = atoms
             count += 1
 
