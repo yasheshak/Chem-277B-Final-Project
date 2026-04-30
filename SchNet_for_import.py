@@ -88,7 +88,7 @@ def train(model: SchNetModel, train_data: list, device, optimizer, loss_function
     return total_train_loss / len(train_data)
 
 @torch.no_grad()
-def evaluate(model: SchNetModel, val_data: list, device, optimizer, loss_function):
+def evaluate(model: SchNetModel, val_data: list, device, loss_function):
     model.eval()
     total_val_loss = 0
 
@@ -109,7 +109,7 @@ def evaluate(model: SchNetModel, val_data: list, device, optimizer, loss_functio
     return total_val_loss / len(val_data)
 
 @torch.no_grad()
-def test(model: SchNetModel, test_data: list, device, optimizer, loss_function):
+def test(model: SchNetModel, test_data: list, device, loss_function):
     model.eval()
 
     total_mae = 0
@@ -121,7 +121,7 @@ def test(model: SchNetModel, test_data: list, device, optimizer, loss_function):
 
         y_pred = model(data)
         y_pred = y_pred.squeeze(-1)
-        y_target = data.y.view(-1, 1)
+        y_target = data.y
 
 
         if model.mean is not None and model.std is not None:
