@@ -134,3 +134,20 @@ def test(model: SchNetModel, test_data: list, device, optimizer, loss_function):
     rmse = (total_mse / n_molecules) ** 0.5
 
     return mean_mae, rmse
+
+def plot_losses(train_loss, val_loss):
+    """Plot training vs validation loss from a history dict."""
+    plt.figure(figsize=(10, 6))
+    plt.plot(train_loss, label='Train Loss', linewidth=2)
+    plt.plot(val_loss, label='Validation Loss',
+             linewidth=2)
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('SchNet Model Training vs Validation Loss')
+    plt.legend()
+    plt.grid(True, alpha=0.3)
+    plt.tight_layout()
+    
+    fig = plt.gcf()
+    
+    return fig
