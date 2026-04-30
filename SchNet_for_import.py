@@ -7,6 +7,8 @@ from torch_geometric.data import Data
 from torch_geometric.nn import SchNet
 from torch_geometric.loader import DataLoader
 
+import matplotlib.pyplot as plt
+
 class SchNetModel(torch.nn.Module):
     def __init__(self,
                  hidden_channels: int = 128,
