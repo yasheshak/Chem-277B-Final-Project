@@ -71,6 +71,7 @@ def train(model: SchNetModel, train_data: list, device, optimizer, loss_function
 
         #Forward step internally performed by PyTorch to obtain predictions (Same as model.forward(data))
         y_pred = model(data)
+        y_pred = y_pred.squeeze(-1)
         y_target = data.y
 
         #Determine train loss based on loss function with predictions and targets
@@ -96,6 +97,7 @@ def evaluate(model: SchNetModel, val_data: list, device, optimizer, loss_functio
 
         #Forward step internally performed by PyTorch to obtain predictions (Same as model.forward(data))
         y_pred = model(data)
+        y_pred = y_pred.squeeze(-1)
         y_target = data.y
 
         #Determine validation loss based on loss function with predictions and targets
@@ -118,11 +120,13 @@ def test(model: SchNetModel, test_data: list, device, optimizer, loss_function):
         data = data.to(device)
 
         y_pred = model(data)
+        y_pred = y_pred.squeeze(-1)
         y_target = data.y.view(-1, 1)
 
 
-        y_pred = y_pred * model.std + model.mean
-        y_target = y_target * model.std + model.mean
+        if model.mean is not None and model.std is not None:
+            y_pred = y_pred * model.std + model.mean
+            y_target = y_target * model.std + model.mean
 
 
         mae = torch.abs(y_pred - y_target).sum()
