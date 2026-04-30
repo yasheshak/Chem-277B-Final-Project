@@ -47,14 +47,20 @@ def get_data(dataset):
     return result
 
 
-def split_data(dataset, train_size_pct: float):
+def split_data(dataset, val_size_pct: float = 0.2, test_size_pct: float = 0.2):
 
-    train_size = int(train_size_pct * len(dataset))
-    val_size = len(dataset) - train_size
+    test_size = int(test_size_pct * len(dataset))
+    temp_train_size = len(dataset) - test_size
 
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    temp_train_dataset, test_dataset = random_split(
+        dataset, [temp_train_size, test_size])
 
-    return train_dataset, val_dataset
+    val_size = int(val_size_pct * len(temp_train_dataset))
+    train_size = len(temp_train_dataset) - val_size
+
+    train_dataset, val_dataset = random_split(temp_train_dataset, [train_size, val_size])
+
+    return train_dataset, val_dataset, test_dataset
 
 def obtain_mean_std(train_data):
     #Initialize variables to keep track of the total sum, total count, and total sum squared
@@ -101,6 +107,6 @@ dataset = process_file(files_list, molecule_type = 'biomolecules', max_molecules
 # Get final dataset for use with PyG
 torch_data = get_data(dataset)
 
-final_dataset = split_data(torch_data)
+final_dataset = split_data(torch_data, val_size_pct = 0.2, test_size_pct = 0.2)
 '''
 
