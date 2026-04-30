@@ -47,7 +47,7 @@ def get_data(dataset):
     return result
 
 
-def split_data(dataset, test_size_pct: float, val_size_pct: float):
+def split_data(dataset, val_size_pct: float = 0.2, test_size_pct: float = 0.2):
 
     test_size = int(test_size_pct * len(dataset))
     temp_train_size = len(dataset) - test_size
@@ -107,6 +107,6 @@ dataset = process_file(files_list, molecule_type = 'biomolecules', max_molecules
 # Get final dataset for use with PyG
 torch_data = get_data(dataset)
 
-final_dataset = split_data(torch_data)
+final_dataset = split_data(torch_data, val_size_pct = 0.2, test_size_pct = 0.2)
 '''
 
