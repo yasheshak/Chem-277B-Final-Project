@@ -1,5 +1,7 @@
 import torch
 
+import matplotlib.pyplot as plt
+
 from tqdm import tqdm
 
 
@@ -155,3 +157,26 @@ class GNNTrainer():
 
         return history
     
+    def plot_train_val(history, model_name: str):
+        """Plot training vs validation loss from a history dict."""
+        fig, ax = plt.subplots(1, 2, figsize=(12, 6))
+
+        ax[0].plot(history['train_mae'], label='Train', linewidth=2)
+        ax[0].plot(history['val_mae'], label='Validation',
+                linewidth=2, linestyle='--')
+        ax[0].set_title(f'MAE')
+        # ax[0].set_xlim(4)
+        ax[0].grid(alpha=0.3)
+        ax[0].legend()
+
+        ax[1].plot(history['train_rmse'], label='Train', linewidth=2)
+        ax[1].plot(history['val_rmse'], label='Validation',
+                linewidth=2, linestyle='--')
+        ax[1].set_title(f'RMSE')
+        ax[1].grid(alpha=0.3)
+        ax[1].legend()
+
+        fig.suptitle(f"MAE and RMSE for {model_name}")
+
+        plt.tight_layout()
+        plt.show()
