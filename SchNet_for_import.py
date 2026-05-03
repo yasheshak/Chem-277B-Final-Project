@@ -149,7 +149,9 @@ def plot_losses(train_loss, val_loss):
              linewidth=2)
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
-    plt.title('SchNet Model Training vs Validation Loss')
+    final_train_loss = train_loss[-1]
+    final_val_loss = val_loss[-1]
+    plt.title(f'SchNet Model Training vs Validation Loss\nfinal train loss: {final_train_loss}\nfinal val loss: {final_val_loss}')
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
