@@ -33,7 +33,7 @@ class SimpleGNN(nn.Module):
 
 
     def forward(self, x, edge_index, batch):
-        return self.simpleGNN(x, edge_index, batch).reshape(-1)
+        return self.simpleGNN(x, edge_index, batch)
     
 
 # inherit from nn.Module 
@@ -71,4 +71,4 @@ class AttentionGCN(nn.Module):
 
 
     def forward(self, x, edge_index, batch):
-        return self.attention(x, edge_index, batch).reshape(-1)
+        return self.attention(x, edge_index, batch)
