@@ -69,19 +69,18 @@ def split_data(dataset, val_size_pct: float = 0.2, test_size_pct: float = 0.2):
     return train_dataset, val_dataset, test_dataset
 
 
+def preprocess(file_path, max_molecules):
+
+    files_list = find_files(file_path)
+    dataset = process_file(files_list, molecule_type = 'biomolecules', max_molecules = max_molecules)
+    torch_data = get_data(dataset)
+    return split_data(torch_data, val_size_pct = 0.2, test_size_pct = 0.2)
+
+
 """
 EXAMPLE USAGE
 """
 
 '''
-# Get files, given data directory
-files_list = find_files('data')
-
-# Process files from list and extract specified number of molecules and type
-dataset = process_file(files_list, molecule_type = 'biomolecules', max_molecules = 100)
-
-# Get final dataset for use with PyG
-torch_data = get_data(dataset)
-
-final_dataset = split_data(torch_data, val_size_pct = 0.2, test_size_pct = 0.2)
+train_dataset, val_dataset, test_dataset = preprocess("../data", 1000)
 '''
