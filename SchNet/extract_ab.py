@@ -97,7 +97,7 @@ def mol_to_data(z, pos, y, extra_feat, y_mask):
 
     return Data(z=z, pos=pos, y=y, extra_feat=extra_feat, y_mask=y_mask)
 
-def get_data(dataset, features: list):
+def get_data_ab(dataset, features: list):
 
     max_atoms = get_max_atoms(dataset)
     N = len(dataset)
@@ -108,11 +108,10 @@ def get_data(dataset, features: list):
     pos = np.zeros((N, max_atoms, 3), dtype=np.float32) # positions
     mask = np.zeros((N, max_atoms), dtype=bool) # for padding
     y = np.zeros((N, 2), dtype=np.float32) # target: homo_lumo
-    y_mask = np.zeros((N, 2), dtype=bool) #padding for target
+    y_mask = np.zeros((N, 2), dtype=bool) # mask array for homo_lumo
 
-    electronegativity = np.zeros((N, max_atoms, 1), dtype=np.float32)
+    electronegativity = np.zeros((N, max_atoms, 1), dtype=np.float32) #
     extra_feat = np.zeros((N, max_atoms, N_features), dtype=np.float32)
-
     for i, mol in enumerate(dataset):
 
         n = len(mol[0])
@@ -132,17 +131,26 @@ def get_data(dataset, features: list):
             y[i][0] = homo_lumo_gap[0]
             y_mask[i] = [1, 0]
 
-
+        #Obtain the respective electronegativity values from the dictionary for each atom in the molecule
         electronegativity_i = np.array([electronegativity_z.get(int(z)) for z in Z[i, :n]])
         electronegativity[i, :n, 0] = electronegativity_i
-        extra_feat[i, :n] = np.stack([np.asarray(mol[0].info[feature]) for feature in features], axis = -1)
 
+        all_features = np.zeros((n, N_features))
+
+        #Iterate through all features and ensure that it exists within info dictionary
+        for j, feature in enumerate(features):
+            if feature in mol[0].info:
+                all_features[:, j] = np.asarray(mol[0].info[feature])
+
+        extra_feat[i, :n] = all_features
+
+    #Combine the extra features array with the electronegativity array
     combined_feat = np.concatenate([extra_feat, electronegativity], axis = -1)
 
+    #Convert each extracted molecule data into a PyTorch Geometric Data object
     result = [mol_to_data(Z[i][mask[i]], pos[i][mask[i]], y[i], combined_feat[i][mask[i]], y_mask[i]) for i in range(len(Z))]
     print(f"Processed {len(result)} atoms")
     return result
-
 
 def feature_scaler(data):
 
