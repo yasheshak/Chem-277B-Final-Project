@@ -1,0 +1,19 @@
+name: homo-lumo
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - pytorch=2.4.0
+  - cpuonly
+  - numpy<2.0
+  - matplotlib
+  - pip:
+    - torch-geometric
+    - "fairchem-core<2.0"
+    - ase
+    - lmdb
+    - e3nn
+    - hydra-core
+    - pymatgen
