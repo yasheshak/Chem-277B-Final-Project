@@ -97,7 +97,7 @@ def mol_to_data(z, pos, y, extra_feat, y_mask):
 
     return Data(z=z, pos=pos, y=y, extra_feat=extra_feat, y_mask=y_mask)
 
-def get_data_ab(dataset, features: list):
+def get_data(dataset, features: list):
 
     max_atoms = get_max_atoms(dataset)
     N = len(dataset)
