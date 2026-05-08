@@ -1,3 +1,4 @@
 extract.ipynb
 SchNet_GNN_Baseline copy.ipynb
 __pycache__/
+data/*.aselmdb
