@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 from torch_geometric.loader import DataLoader
 import numpy as np
 from fairchem.core.datasets import AseDBDataset
@@ -10,7 +9,7 @@ from torch_cluster import radius_graph
 import matplotlib.pyplot as plt
 from read_multi_ase import *
 from extract_ab import *
-
+import argparse
 
 class EmbeddedSchNet(torch.nn.Module):
     def __init__(self,
@@ -61,8 +60,6 @@ class EmbeddedSchNet(torch.nn.Module):
 
         #Initialize atom embeddings through SchNet
         atom_embeddings = self.schnet.embedding(atomic_num)
-
-        # print(extra_feat.shape)
 
         #Project extra features on linear layer
         extra_linear = self.linear(extra_feat)
@@ -195,18 +192,42 @@ def plot_losses(train_loss, val_loss):
     plt.tight_layout()
     plt.show()
 
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description = "Embedded SchNet Model for HOMO-LUMO Gap Prediction")
+    parser.add_argument("--data_path", nargs = "+", default = "./OMol25_data/data0000.aselmdb", help = "Path(s) to .aselmdb file(s)")
+    parser.add_argument("--num_molecules", type = int, default = 500, help = "Number of molecules to use")
+    parser.add_argument("--molecule_type", type = str, default = "biomolecules", help = "Molecule type filter (or 'all')")
+    parser.add_argument("--epochs", type = int, default = 50)
+    parser.add_argument("--hidden_channels", type = int, default = 128)
+    parser.add_argument("--num_filters", type = int, default = 256)
+    parser.add_argument("--cutoff", type = int, default = 8)
+    parser.add_argument("--num_gaussians", type = int, default = 60)
+    parser.add_argument("--num_interactions", type = int, default = 6)
+    parser.add_argument("--max_num_neighbors", type = int, default = 40)
+    parser.add_argument("--readout", type = str, default = "mean")
+    parser.add_argument("--features", nargs = "+", type = str, default = ["lowdin_charges"], help = "Extra molecular features to be embedded")
+    parser.add_argument("--extra_feat_dim", type = int, default = 2, help = "Add one to length of features list since electronegativity is internally added as feature")
+    parser.add_argument("--batch_size", type = int, default = 32)
+    parser.add_argument("--lr", type = float, default = 5e-5)
+    parser.add_argument("--weight_decay", type = float, default = 1e-4)
+    parser.add_argument("--save_model", type = str, default = None, help = "Path to save model weights")
+    args = parser.parse_args()
+
 #Determine the device to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Device: {device}")
+
 #Initialize model with desired parameters
-bio_model = EmbeddedSchNet(hidden_channels = 128, num_filters = 256, cutoff = 8, num_gaussians = 60, num_interactions = 6, max_num_neighbors = 40, readout = "mean", extra_feat_dim = 2).to(device)
+bio_model = EmbeddedSchNet(hidden_channels = args.hidden_channels, num_filters = args.num_filters, cutoff = args.cutoff, num_gaussians = args.num_gaussians, num_interactions = args.num_interactions, max_num_neighbors = args.max_num_neighbors, readout = args.readout, extra_feat_dim = args.extra_feat_dim).to(device)
 #Create AdamW optimizer based on model's parameters and desired learning rate and weight decay
-optimizer = torch.optim.AdamW(bio_model.parameters(), lr=5e-5, weight_decay=1e-4)
+optimizer = torch.optim.AdamW(bio_model.parameters(), lr = args.lr, weight_decay = args.weight_decay)
 #Select loss function for model
 loss_function = torch.nn.SmoothL1Loss(reduction = "none")
 
 #Load data and specified features with helper functions
-bio_sample = process_file(file="./train_4M/data0000.aselmdb", molecule_type= "biomolecules", max_molecules = 20000)
-bio_data = get_data(bio_sample, ["lowdin_charges"])
+bio_sample = process_file(file = args.data_path, molecule_type= args.molecule_type, max_molecules = args.num_molecules)
+bio_data = get_data(bio_sample, args.features)
 bio_train, bio_val, bio_test = split_data(bio_data, 0.2, 0.2)
 
 #Scale features of all sets with training data fit scaler
@@ -222,12 +243,12 @@ bio_val = normalize_target(bio_val, bio_model.mean, bio_model.std)
 bio_test = normalize_target(bio_test, bio_model.mean, bio_model.std)
 
 #Finish loading the data with specific batch size
-bio_train_loader = DataLoader(bio_train, batch_size=32, shuffle=True)
-bio_val_loader = DataLoader(bio_val, batch_size=32)
-bio_test_loader = DataLoader(bio_test, batch_size=32)
+bio_train_loader = DataLoader(bio_train, batch_size = args.batch_size, shuffle = True)
+bio_val_loader = DataLoader(bio_val, batch_size = args.batch_size)
+bio_test_loader = DataLoader(bio_test, batch_size = args.batch_size)
 
 #Set training epochs and initialize arrays to store training and validation losses
-epochs = 50
+epochs = args.epochs
 bio_train_losses = np.zeros(epochs)
 bio_val_losses = np.zeros(epochs)
 
@@ -248,3 +269,23 @@ mae, rmse = test(bio_model, bio_test_loader)
 
 print(f"Test MAE:  {mae:.4f}")
 print(f"Test RMSE: {rmse:.4f}")
+
+if args.save_model:
+    torch.save({
+    "model_weights": bio_model.state_dict(),
+    "config": {
+        "hidden_channels": args.hidden_channels,
+        "num_filters": args.num_filters,
+        "num_gaussians": args.num_gaussians,
+        "cutoff": args.cutoff,
+        "num_interactions": args.num_interactions,
+        "max_num_neighbors": args.max_num_neighbors,
+        "readout": args.readout,
+        "extra_feat_dim": args.extra_feat_dim
+    },
+    "norm": {
+        "mean": bio_model.mean,
+        "std": bio_model.std
+    },
+    "scaler": train_scaler
+}, args.save_model)
