@@ -1,5 +1,9 @@
 # 277B Final - Team 4
 
+### Project title: Graph Neural Networks for HOMO LUMO gap Prediction of Molecules using OMol25
+
+### Abstract: The development of novel materials is largely limited by cost. Effective models for screening molecular compounds for desirable electronic properties prior to development and synthesis of materials can dramatically reduce this burden. Molecular machine learning methods such as Machine Learning Interatomic Potentials (MLIPs)  have taken prominence in recent years in the fields of chemistry and materials science due to their speed and accuracy. MLIPs are a promising alternative to computationally expensive Density Functional Theory (DFT) calculations. Graph Neural Networks (GNNS) are the dominant machine learning architecture used to model and predict molecular properties. In this paper, we explore three different GNNs. We begin with a traditional graph convolutional network (SimpleGNN) to better understand the limitations of this simple architecture for our application, before exploring other more complex architectures like SchNet and DimeNet++, which are optimized for modeling quantum chemical interactions. Our models are trained on a subset of OMol25. For 20k molecular compounds, we observed poor performance for SimpleGNN. SchNet and DimeNet++ achieved a final test MAE of 0.7624 and __, respectively, and an RMSE of 1.1869 and __, respectively. DimeNet++ demonstrates higher overall accuracy because of the angular information it incorporates into its embedding. 
+
 ## Directories
 
 1. **EDA**: Initial exploratory data analysis notebooks
