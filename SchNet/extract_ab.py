@@ -132,7 +132,7 @@ def get_data(dataset, features: list):
             y_mask[i] = [1, 0]
 
         #Obtain the respective electronegativity values from the dictionary for each atom in the molecule
-        electronegativity_i = np.array([electronegativity_z.get(int(z)) for z in Z[i, :n]])
+        electronegativity_i = np.array([electronegativity_z.get(int(z), 2.0) for z in Z[i, :n]])
         electronegativity[i, :n, 0] = electronegativity_i
 
         all_features = np.zeros((n, N_features))

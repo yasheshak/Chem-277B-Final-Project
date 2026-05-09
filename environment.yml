@@ -9,6 +9,8 @@ dependencies:
   - cpuonly
   - numpy<2.0
   - matplotlib
+  - pandas
+  - scikit-learn = 1.8.0
   - pip:
     - torch-geometric
     - "fairchem-core<2.0"
@@ -17,3 +19,4 @@ dependencies:
     - e3nn
     - hydra-core
     - pymatgen
+    - gdown
