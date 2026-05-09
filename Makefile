@@ -1,7 +1,9 @@
-.PHONY: setup install-pyg test clean download-data schnet test-schnet
+.PHONY: setup install-pyg test clean download-data schnet test-schnet dimenet test-dimenet
 
 SCHNET_SCRIPT = ./SchNet/SchNet_Final.py
 SCHNET_TEST_SCRIPT = ./SchNet/SchNet_Test.py
+DIMENET_SCRIPT = ./DimeNet/DimeNet_Final.py
+DIMENET_TEST_SCRIPT = ./DimeNet/DimeNet_Test.py
 DOWNLOAD_SCRIPT = download_data.py
 
 setup:
@@ -26,3 +28,9 @@ schnet:
 
 test-schnet:
 	python $(SCHNET_TEST_SCRIPT) $(ARGS)
+
+dimenet:
+	python $(DIMENET_SCRIPT) $(ARGS)
+
+test-dimenet:
+	python $(DIMENET_TEST_SCRIPT) $(ARGS)
