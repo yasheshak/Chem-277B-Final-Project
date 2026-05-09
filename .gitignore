@@ -1,5 +1,5 @@
-extract.ipynb
-SchNet_GNN_Baseline copy.ipynb
 __pycache__/
-OMol25_data
-/*.aselmdb
+*.pyc
+.DS_Store
+OMol25_data/
+*.aselmdb

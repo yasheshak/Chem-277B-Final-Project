@@ -1,8 +1,8 @@
 .PHONY: setup install-pyg test clean download-data schnet test-schnet dimenet test-dimenet
 
-SCHNET_SCRIPT = ./SchNet/SchNet_Final.py
+SCHNET_SCRIPT = ./SchNet/SchNet_Train.py
 SCHNET_TEST_SCRIPT = ./SchNet/SchNet_Test.py
-DIMENET_SCRIPT = ./DimeNet/DimeNet_Final.py
+DIMENET_SCRIPT = ./DimeNet/DimeNet_Train.py
 DIMENET_TEST_SCRIPT = ./DimeNet/DimeNet_Test.py
 DOWNLOAD_SCRIPT = download_data.py
 
@@ -12,10 +12,10 @@ setup:
 	@echo "Then run: make install-pyg"
 
 install-pyg:
-	conda run -n homo-lumo python -m pip install ase-db-backends torch-scatter torch-cluster torch-sparse -f https://data.pyg.org/whl/torch-2.4.0+cpu.html
+	conda run -n homo-lumo python -m pip install "fairchem-core<2.0" ase-db-backends torch-scatter torch-cluster torch-sparse -f https://data.pyg.org/whl/torch-2.4.0+cpu.html
 
 test:
-	python -c "import torch; from torch_geometric.nn import DimeNetPlusPlus; from torch_scatter import scatter; print('All imports OK')"
+	@python -c "import torch; from torch_geometric.nn import DimeNetPlusPlus; from torch_geometric.nn import SchNet; from torch_scatter import scatter; from fairchem.core.datasets import AseDBDataset; print('All imports OK')"
 
 clean:
 	conda env remove -n homo-lumo -y

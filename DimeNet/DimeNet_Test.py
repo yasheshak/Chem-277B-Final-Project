@@ -5,8 +5,8 @@ from torch_geometric.nn import DimeNetPlusPlus, radius_graph
 from torch_geometric.loader import DataLoader
 from torch_geometric.utils import scatter, softmax
 from torch_geometric.typing import SparseTensor
-from read_multi_ase_att import *
-from extract_ab_att_emb import *
+from read_multi_ase import *
+from extract_ab import *
 import pandas as pd
 import argparse
 

@@ -2,7 +2,7 @@ import torch
 import numpy as np
 from torch_geometric.data import Data
 from torch.utils.data import random_split
-from read_multi_ase_att import *
+from read_multi_ase import *
 
 
 def get_data(dataset):

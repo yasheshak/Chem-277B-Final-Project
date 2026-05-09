@@ -10,11 +10,12 @@ dependencies:
   - numpy<2.0
   - matplotlib
   - pandas
-  - scikit-learn = 1.8.0
+  - scikit-learn=1.8.0
   - pip:
     - torch-geometric
     - "fairchem-core<2.0"
     - ase
+    - ase-db-backends
     - lmdb
     - e3nn
     - hydra-core
